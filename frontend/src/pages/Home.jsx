@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-function Home() {
+function Home({ setIsAuthenticated }) {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
@@ -23,10 +23,11 @@ function Home() {
 
   const handleLogout = async () => {
     try {
-      await axios.post("http://localhost:8000/api/auth/logout", {
+      await axios.post("http://localhost:8000/api/auth/logout", {}, {
         withCredentials: true,
       });
-      navigate("/login");
+      setIsAuthenticated(false);
+      navigate("/register");
     } catch (error) {
       console.error("Error logging out:", error);
     }

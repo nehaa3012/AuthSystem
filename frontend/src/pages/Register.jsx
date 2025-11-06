@@ -33,8 +33,8 @@ function Register() {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="bg-white p-8 shadow-lg rounded-2xl w-full max-w-md">
-        <h2 className="text-2xl font-semibold mb-6 text-center text-gray-700">
-          Register
+        <h2 className="text-3xl font-semibold  mb-6 text-center text-gray-700 font-[Playfair+Display,_sans-serif] ">
+          AUTH SYSTEM
         </h2>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           {/* Name */}

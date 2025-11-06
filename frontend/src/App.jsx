@@ -32,7 +32,7 @@ function App() {
     if (isLoading) {
       return <div>Loading...</div>; // Show loading state
     }
-    return isAuthenticated ? children : <Navigate to="/login" replace />;
+    return isAuthenticated ? children : <Navigate to="/register" replace />;
   };
 
   // Public Route component (for login/register when already authenticated)
@@ -48,7 +48,7 @@ function App() {
       path: "/",
       element: (
         <ProtectedRoute>
-          <Home />
+          <Home setIsAuthenticated={setIsAuthenticated} />
         </ProtectedRoute>
       )
     },
