@@ -4,7 +4,7 @@ import axios from "axios";
 import { toast } from "react-hot-toast";
 import { useNavigate, Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import { FiUser, FiMail, FiLock, FiArrowRight } from "react-icons/fi";
+import { FiUser, FiMail, FiLock, FiArrowRight, FiUpload, FiImage } from "react-icons/fi";
 
 function Register({onRegister}) {
   const navigate = useNavigate();
@@ -24,15 +24,32 @@ function Register({onRegister}) {
   const onSubmit = async (data) => {
     setIsSubmitting(true);
     try {
+      const formData = new FormData();
+      
+      // Append all form data to FormData
+      Object.keys(data).forEach(key => {
+        if (key === 'image' && data[key][0]) {
+          formData.append('image', data.image[0]);
+        } else if (key !== 'image') {
+          formData.append(key, data[key]);
+        }
+      });
+
       const res = await axios.post(
         "http://localhost:8000/api/auth/register",
-        data,
-        { withCredentials: true }
+        formData,
+        {
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        }
       );
+      
       console.log("Register Success:", res.data);
       toast.success("Registration successful!");
       reset();
-      onRegister()
+      onRegister();
       navigate("/");
     } catch (err) {
       console.error("Register Error:", err.response?.data || err.message);
@@ -81,6 +98,51 @@ function Register({onRegister}) {
                     {errors.name && (
                       <p className="mt-1 text-sm text-red-500">{errors.name.message}</p>
                     )}
+                  </div>
+
+                  {/* Profile Image */}
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Profile Picture
+                    </label>
+                    <div className="flex items-center justify-center w-full">
+                      <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                          <FiUpload className="w-8 h-8 mb-2 text-gray-400" />
+                          <p className="text-sm text-gray-500 dark:text-gray-400">
+                            <span className="font-semibold">Click to upload</span> or drag and drop
+                          </p>
+                          <p className="text-xs text-gray-400 mt-1">PNG, JPG, JPEG (max 2MB)</p>
+                        </div>
+                        <input 
+                          type="file" 
+                          className="hidden" 
+                          {...register("image", {
+                            required: false,
+                            validate: {
+                              fileSize: (files) => {
+                                if (files[0]) {
+                                  return files[0].size <= 2 * 1024 * 1024 || 'File size should be less than 2MB';
+                                }
+                                return true;
+                              },
+                              fileType: (files) => {
+                                if (files[0]) {
+                                  return ['image/jpeg', 'image/png', 'image/jpg'].includes(files[0].type) || 'Only JPEG, JPG & PNG files are allowed';
+                                }
+                                return true;
+                              }
+                            }
+                          })}
+                        />
+                      </label>
+                    </div>
+                    {errors.image && (
+                      <p className="mt-1 text-sm text-red-500">{errors.image.message}</p>
+                    )}
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      Optional. Max file size: 2MB. Allowed formats: .jpg, .jpeg, .png
+                    </p>
                   </div>
 
                   {/* Email */}
